@@ -18,6 +18,7 @@ export default function App() {
   const [modalVisibleUpdate, setModalVisibleUpdate] = useState(false);
   const [readData, setReadData] = useState('');
   const [name, setName] = useState('');
+  const [id, setID] = useState('');
   const [age, setAge] = useState('');
   const [email, setEmail] = useState('');
   const [designation, setDesignation] = useState('');
@@ -82,14 +83,41 @@ export default function App() {
 
   const updateHandler = (item) =>{
     setModalVisibleUpdate(true);
+    setID(item.id);
     setName(item.name);
     setAge(item.age);
     setEmail(item.email);
     setDesignation(item.designation);
-
   }
 
   const updateData = async()=>{
+    if(name != '' && age != '' && email != '' && designation != ''){
+      setIsLoading(true);
+      await axios.post(updateURL, {
+        id : id,
+        name : name,
+        email: email,
+        age : age,
+        designation : designation,
+      })
+      .then((response) => {
+        Alert.alert(response.data);
+        setIsLoading(false);
+        setModalVisibleUpdate(!modalVisibleUpdate);
+        setName('')
+        setID('')
+        setAge('')
+        setEmail('')
+        setDesignation('')
+        getData()
+      })
+      .catch((error)=>{
+        console.log(error);
+      });
+    }
+    else{
+      Alert.alert('Please Complete All  Fields on the Form');
+    }
         // await axios.post(updateURL, {
     //   name : name,
     //   age : age,
@@ -143,7 +171,7 @@ export default function App() {
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
-                createData()
+                createData();
               }}
               disabled = {isLoading}
             >
